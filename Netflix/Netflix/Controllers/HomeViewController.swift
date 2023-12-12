@@ -11,8 +11,8 @@ class HomeViewController: UIViewController {
     
     let sectionTitles: [String] = [
         "Trending Movies",
-        "Popular",
         "Trending TVs",
+        "Popular",
         "Upcoming Movies",
         "Top Rated"
     ]
@@ -37,8 +37,8 @@ class HomeViewController: UIViewController {
     }
     
     private func getTrendingMovies() {
-        APICaller.shared.getTrendingMovies { results in
-            switch results {
+        APICaller.shared.getTrendingMovies { result in
+            switch result {
             case .success(let movies):
                 print(movies.forEach({ movie in
                     print("\(movie)\n")
@@ -49,6 +49,32 @@ class HomeViewController: UIViewController {
         }
     }
     
+    private func getTrendingTvs() {
+        APICaller.shared.getTrendingTvs { result in
+            switch result {
+            case .success(let tvs):
+                print(tvs.forEach({ tv in
+                    print("\(tv)\n")
+                }))
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    private func getUpcomingMovies() {
+        APICaller.shared.getTopRatedMovies { result in
+            switch result {
+            case .success(let movies):
+                print(movies.forEach({ movie in
+                    print("\(movie)\n")
+                }))
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -60,7 +86,9 @@ class HomeViewController: UIViewController {
         homeFeedTable.tableHeaderView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         
         configureNavbar()
-        getTrendingMovies() 
+//        getTrendingMovies()
+//        getTrendingTvs()
+        getUpcomingMovies() 
     }
     
     override func viewDidLayoutSubviews() {
@@ -98,9 +126,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         guard let header = view as? UITableViewHeaderFooterView else { return }
-        header.textLabel?.text = header.textLabel?.text?.lowercased()
+        header.textLabel?.text = header.textLabel?.text?.capitaliseFirstLetter()
         header.textLabel?.font = .systemFont(ofSize:  18, weight: .semibold)
-        header.textLabel?.textColor = .white 
+        header.textLabel?.textColor = .white
         header.textLabel?.frame = CGRect(x: header.bounds.origin.x + 20, y: header.bounds.origin.y, width: 100, height: header.bounds.height)
     }
     
