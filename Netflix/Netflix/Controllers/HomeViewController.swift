@@ -7,6 +7,14 @@
 
 import UIKit
 
+enum Section: Int {
+    case TrendingMovies = 0
+    case TrendingTvs = 1
+    case Popular = 2
+    case Upcoming = 3
+    case TopRated = 4
+}
+
 class HomeViewController: UIViewController {
     
     let sectionTitles: [String] = [
@@ -27,7 +35,6 @@ class HomeViewController: UIViewController {
         var image = UIImage(named: "netflix-logo")
         image = image?.withRenderingMode(.alwaysOriginal)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: image, style: .done, target: self, action: nil)
-        
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: self, action: nil),
             UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: self, action: nil)
@@ -36,44 +43,18 @@ class HomeViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
     }
     
-    private func getTrendingMovies() {
-        APICaller.shared.getTrendingMovies { result in
-            switch result {
-            case .success(let movies):
-                print(movies.forEach({ movie in
-                    print("\(movie)\n")
-                }))
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
-    
-    private func getTrendingTvs() {
-        APICaller.shared.getTrendingTvs { result in
-            switch result {
-            case .success(let tvs):
-                print(tvs.forEach({ tv in
-                    print("\(tv)\n")
-                }))
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
-    
-    private func getUpcomingMovies() {
-        APICaller.shared.getTopRatedMovies { result in
-            switch result {
-            case .success(let movies):
-                print(movies.forEach({ movie in
-                    print("\(movie)\n")
-                }))
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
+//    private func getTrendingMovies() {
+//        APICaller.shared.getTrendingMovies { result in
+//            switch result {
+//            case .success(let movies):
+//                print(movies.forEach({ movie in
+//                    print("\(movie)\n")
+//                }))
+//            case .failure(let error):
+//                print(error)
+//            }
+//        }
+//    }
      
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,9 +67,6 @@ class HomeViewController: UIViewController {
         homeFeedTable.tableHeaderView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         
         configureNavbar()
-//        getTrendingMovies()
-//        getTrendingTvs()
-        getUpcomingMovies() 
     }
     
     override func viewDidLayoutSubviews() {
@@ -109,6 +87,56 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CollectionViewTableViewCell.identifier, for: indexPath) as? CollectionViewTableViewCell else { return UITableViewCell() }
+        
+        switch indexPath.section {
+        case Section.TrendingMovies.rawValue:
+            APICaller.shared.getTrendingMovies { result in
+                switch result {
+                    case .success(let titles):
+                        cell.configure(with: titles)
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                }
+            }
+        case Section.TrendingTvs.rawValue:
+            APICaller.shared.getTrendingTvs { result in
+                switch result {
+                    case .success(let titles):
+                        cell.configure(with: titles)
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                }
+            }
+        case Section.Popular.rawValue:
+            APICaller.shared.getPopularMovies { result in
+                switch result {
+                    case .success(let titles):
+                        cell.configure(with: titles)
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                }
+            }
+        case Section.Upcoming.rawValue:
+            APICaller.shared.getUpcomingMovies { result in
+                switch result {
+                    case .success(let titles):
+                        cell.configure(with: titles)
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                }
+            }
+        case Section.TopRated.rawValue:
+            APICaller.shared.getTopRatedMovies { result in
+                switch result {
+                    case .success(let titles):
+                        cell.configure(with: titles)
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                }
+            }
+        default:
+            return UITableViewCell()
+        }
         return cell
     }
     

@@ -27,7 +27,7 @@ class APICaller {
 //                let results = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
 //                print(results)
                 let results = try JSONDecoder().decode(TrendingTitlesResponse.self, from: data)
-                completion(.success(results.results))
+                completion(.success(results.results))    
             } catch {
                 completion(.failure(APIError.failedToGetData))
             }
